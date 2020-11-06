@@ -6,12 +6,12 @@ namespace Injector.Core
 {
     public class ConcreteInjector : DependenciesInjector
     {
-        static readonly object[] EmptyExtras = new object[0];
-        readonly Dictionary<Type, object> instances = new Dictionary<Type, object>();
-        readonly Dictionary<Type, Type> implementations = new Dictionary<Type, Type>();
+        private static readonly object[] EmptyExtras = new object[0];
+        private readonly Dictionary<Type, object> instances = new Dictionary<Type, object>();
+        private readonly Dictionary<Type, Type> implementations = new Dictionary<Type, Type>();
 
         private object[] extras = EmptyExtras;
-        
+
         public T Get<T>() where T : class
         {
             return Resolve(typeof(T)) as T;
@@ -21,7 +21,7 @@ namespace Injector.Core
         {
             extras = extraDependencies;
             var dependency = Resolve(typeof(T)) as T;
-            extras = EmptyExtras; 
+            extras = EmptyExtras;
             return dependency;
         }
 
@@ -47,7 +47,7 @@ namespace Injector.Core
             instances.Remove(typeof(T));
         }
 
-        bool TryGetInstance(Type type, out object instance)
+        private bool TryGetInstance(Type type, out object instance)
         {
             var hasInstance = instances.TryGetValue(type, out instance);
             if (hasInstance) return true;
@@ -63,8 +63,8 @@ namespace Injector.Core
 
             return false;
         }
-        
-        object Resolve(Type type)
+
+        private object Resolve(Type type)
         {
             if (TryGetInstance(type, out var instance))
             {
@@ -75,17 +75,19 @@ namespace Injector.Core
             {
                 return null;
             }
+
             var constructor = GetBestConstructor(type);
             if (constructor == null)
             {
                 return null;
             }
+
             instance = InvokeConstructor(constructor);
             instances[type] = instance;
             return instance;
         }
-        
-        object InvokeConstructor(ConstructorInfo constructor)
+
+        private object InvokeConstructor(ConstructorInfo constructor)
         {
             var parameters = constructor.GetParameters();
             var arguments = new object[parameters.Length];
@@ -96,25 +98,26 @@ namespace Injector.Core
 
                 arguments[i] = Resolve(parameter.ParameterType);
             }
+
             return constructor.Invoke(arguments);
         }
 
-        ConstructorInfo GetBestConstructor(Type lowType)
+        private ConstructorInfo GetBestConstructor(Type lowType)
         {
             if (!implementations.TryGetValue(lowType, out var type))
             {
                 type = lowType;
             }
-            
+
             var constructors = type.GetConstructors();
 
             var maxParams = -1;
             ConstructorInfo maxConstructor = null;
-            
+
             foreach (var constructor in constructors)
             {
                 if (!CanInitialize(constructor)) continue;
-                
+
                 if (HasAttribute<Inject>(constructor))
                 {
                     return constructor;
@@ -126,30 +129,29 @@ namespace Injector.Core
                     maxParams = constructor.GetParameters().Length;
                 }
             }
+
             return maxConstructor;
         }
 
-        bool CanInitialize(ConstructorInfo constructor)
+        private bool CanInitialize(ConstructorInfo constructor)
         {
             foreach (var t in constructor.GetParameters())
             {
-                if (!IsRegistered(t.ParameterType)) 
+                if (!IsRegistered(t.ParameterType))
                     return false;
             }
 
             return true;
         }
 
-        bool IsRegistered(Type type)
+        private bool IsRegistered(Type type)
         {
             return implementations.ContainsKey(type);
         }
-        
-        bool HasAttribute<T>(MemberInfo info) where T : Attribute
+
+        private bool HasAttribute<T>(MemberInfo info) where T : Attribute
         {
             return info.GetCustomAttribute<T>() != null;
         }
-        
     }
-
 }

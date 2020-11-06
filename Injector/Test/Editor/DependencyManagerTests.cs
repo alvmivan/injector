@@ -48,17 +48,6 @@ namespace Injector.Test.Editor
         }
 
         [Test]
-        public void RetrieveClassWithParameterWithTag()
-        {
-            dependencyManager.Register<StudyCaseA>();
-            dependencyManager.Register<StudyCaseC>();
-            var c = dependencyManager.Get<StudyCaseC>();
-
-            Assert.NotNull(c);
-            Assert.AreEqual(c.x, "no_params");
-        }
-
-        [Test]
         public void ClearADependency()
         {
             dependencyManager.Register<StudyCaseA>();

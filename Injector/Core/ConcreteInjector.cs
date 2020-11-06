@@ -118,11 +118,6 @@ namespace Injector.Core
             {
                 if (!CanInitialize(constructor)) continue;
 
-                if (HasAttribute<Inject>(constructor))
-                {
-                    return constructor;
-                }
-
                 if (constructor.GetParameters().Length > maxParams)
                 {
                     maxConstructor = constructor;

@@ -1,0 +1,24 @@
+{
+  "name": "com.torque-games.injector",
+  "version": "1.0.1",
+  "displayName": "Injector",
+  "description": "Reflection based dependencies handler",
+  "unity": "2021.3",
+  "unityRelease": "0f1",
+  "documentationUrl": "",
+  "changelogUrl": "",
+  "licensesUrl": "https://www.gnu.org/licenses/gpl-3.0.html",
+  "keywords": [
+    "dependencies",
+    "dependency",
+    "singleton",
+    "injector",
+    "injection"
+  ],
+  "author": {
+    "name": "Torque Games",
+    "email": "torquegamesa@gmail.com",
+    "url": "https://github.com/torque-games/"
+  },
+  "type": "library"
+}
